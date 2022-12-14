@@ -34,8 +34,9 @@ async def get_all_temperature():
     result = collection.find()
     for x in result:
         datas.append({
-            "temperature": x.get("value"),
+            "value": x.get("value"),
             "created_at": x.get("created_at"),
+            "fetch_time": x.get("fetch_time")
         })
     return datas
 

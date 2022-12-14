@@ -34,8 +34,9 @@ async def get_all_moisture():
     result = collection.find()
     for x in result:
         datas.append({
-            "moisture": x.get("value"),
+            "value": x.get("value"),
             "created_at": x.get("created_at"),
+            "fetch_time": x.get("fetch_time")
         })
     return datas
 
