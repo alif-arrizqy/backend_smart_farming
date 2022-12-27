@@ -1,6 +1,5 @@
 import os
 import aiohttp
-import asyncio
 import time
 from pymongo import MongoClient
 from datetime import datetime
@@ -29,11 +28,12 @@ except Exception as e:
 base_url = os.getenv("BASE_URL")
 
 
-async def get_all_humidity():
+async def get_all_humidity_terung():
     datas = []
-    result = collection.find()
+    result = collection.find({"tanaman": "terung"})
     for x in result:
         datas.append({
+            "tanaman": x.get("tanaman"),
             "value": x.get("value"),
             "created_at": x.get("created_at"),
             "fetch_time": x.get("fetch_time")
@@ -41,32 +41,21 @@ async def get_all_humidity():
     return datas
 
 
-async def get_humidity():
+async def get_humidity_terung():
     start_time = time.time()
     async with aiohttp.ClientSession() as session:
         async with session.get(f"{base_url}/humidity") as response:
             resp = await response.json()
             collection.insert_one({
+                "tanaman": "terung",
                 "value": resp["value"],
                 "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "fetch_time": f"{round(time.time() - start_time, 2)}"
             })
             datas = {
+                "tanaman": "terung",
                 "value": resp["value"],
                 "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "fetch_time": f"{round(time.time() - start_time, 2)}"
             }
             return datas
-
-
-async def store_humidity(value):
-    collection.insert_one({
-        "value": value.get("value"),
-        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    })
-    datas = {
-        "value": value.get("value"),
-        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    }
-    return datas
-    
