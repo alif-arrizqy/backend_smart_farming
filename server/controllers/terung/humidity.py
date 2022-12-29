@@ -30,7 +30,7 @@ base_url = os.getenv("BASE_URL")
 
 async def get_all_humidity_terung():
     datas = []
-    result = collection.find({"tanaman": "terung"})
+    result = collection.find({"tanaman": "terung"}).sort("created_at", -1)
     for x in result:
         datas.append({
             "tanaman": x.get("tanaman"),

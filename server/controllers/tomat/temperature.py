@@ -31,7 +31,7 @@ base_url = os.getenv("BASE_URL")
 
 async def get_all_temperature_tomat():
     datas = []
-    result = collection.find()
+    result = collection.find({"tanaman": "tomat"}).sort("created_at", -1)
     for x in result:
         datas.append({
             "tanaman": x.get("tanaman"),
