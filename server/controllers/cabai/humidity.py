@@ -3,9 +3,11 @@ import aiohttp
 import time
 from pymongo import MongoClient
 from datetime import datetime
-from server.response_helper import *
+# from server.response_helper import *
 from dotenv import load_dotenv
 from time import sleep
+from server.controllers.notification.bot_humidity import send_message
+from server.controllers.config_value import *
 
 env = load_dotenv()
 
@@ -46,16 +48,19 @@ async def get_humidity_cabai():
     async with aiohttp.ClientSession() as session:
         async with session.get(f"{base_url}/humidity") as response:
             resp = await response.json()
+            value = resp.get("value")
             collection.insert_one({
                 "tanaman": "cabai",
-                "value": resp["value"],
+                "value": value,
                 "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "fetch_time": f"{round(time.time() - start_time, 2)}"
             })
-            datas = {
-                "tanaman": "cabai",
-                "value": resp["value"],
-                "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "fetch_time": f"{round(time.time() - start_time, 2)}"
-            }
-            return datas
+            if value < limit_humidity_cabai:
+                datas = {
+                    "tanaman": "cabai",
+                    "value": value,
+                    "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "fetch_time": f"{round(time.time() - start_time, 2)}"
+                }
+                await send_message(datas)
+            return datas        
