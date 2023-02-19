@@ -55,12 +55,12 @@ async def get_moisture_terung():
                 "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "fetch_time": f"{round(time.time() - start_time, 2)}"
             })
+            datas = {
+                "tanaman": "terung",
+                "value": value,
+                "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "fetch_time": f"{round(time.time() - start_time, 2)}"
+            }
             if value < limit_moisture_terung:
-                datas = {
-                    "tanaman": "terung",
-                    "value": value,
-                    "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "fetch_time": f"{round(time.time() - start_time, 2)}"
-                }
                 await send_message(datas)
             return datas

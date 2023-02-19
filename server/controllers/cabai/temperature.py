@@ -55,12 +55,12 @@ async def get_temperature_cabai():
                 "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "fetch_time": f"{round(time.time() - start_time, 2)}"
             })
+            datas = {
+                "tanaman": "cabai",
+                "value": value,
+                "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "fetch_time": f"{round(time.time() - start_time, 2)}"
+            }
             if value > limit_temperature_cabai:
-                datas = {
-                    "tanaman": "cabai",
-                    "value": value,
-                    "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "fetch_time": f"{round(time.time() - start_time, 2)}"
-                }
                 await send_message(datas)
             return datas
