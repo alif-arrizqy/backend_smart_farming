@@ -11,3 +11,4 @@ from .notification.bot_humidity import *
 from .notification.bot_moisture import *
 from .notification.bot_temperature import *
 from .config_value import *
+from .tanaman.tanaman import *

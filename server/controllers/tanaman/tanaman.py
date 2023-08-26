@@ -6,8 +6,6 @@ from datetime import datetime
 from server.response_helper import *
 from dotenv import load_dotenv
 from time import sleep
-from server.controllers.notification.bot_temperature import send_message
-from server.controllers.config_value import *
 
 env = load_dotenv()
 
@@ -18,7 +16,7 @@ num_fails = 0
 try:
     client = MongoClient(os.getenv("MONGO_URI"), serverSelectionTimeoutMS=10000, connectTimeoutMS=10000, maxPoolSize=20, waitQueueTimeoutMS=10000)
     db = client[os.getenv("DATABASE")]
-    collection = db.temperature
+    collection = db.tanaman
 except Exception as e:
     num_fails += 1
     print(f"{e} attempt fail {num_fails}")
@@ -30,37 +28,41 @@ except Exception as e:
 base_url = os.getenv("BASE_URL")
 
 
-async def get_all_temperature_tomat():
+async def get_all_tanaman():
     datas = []
-    result = collection.find({"tanaman": "tomat"}).sort("created_at", -1)
+    result = collection.find()
     for x in result:
         datas.append({
-            "tanaman": x.get("tanaman"),
-            "value": x.get("value"),
+            "temperature": x.get("temperature"),
+            "moisture": x.get("moisture"),
+            "fuzzy": x.get("fuzzy"),
             "created_at": x.get("created_at"),
             "fetch_time": x.get("fetch_time")
         })
     return datas
 
 
-async def get_temperature_tomat():
+async def get_single_tanaman():
     start_time = time.time()
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"{base_url}/temperature") as response:
+        async with session.get(f"{base_url}/tanaman") as response:
             resp = await response.json()
-            value = resp.get("value")
+            temperature = resp.get("temperature")
+            moisture = resp.get("moisture")
+            fuzzy = resp.get("fuzzy")
+
             collection.insert_one({
-                "tanaman": "tomat",
-                "value": value,
+                "temperature": temperature,
+                "moisture": moisture,
+                "fuzzy": fuzzy,
                 "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "fetch_time": f"{round(time.time() - start_time, 2)}"
             })
             datas = {
-                "tanaman": "tomat",
-                "value": value,
+                "temperature": temperature,
+                "moisture": moisture,
+                "fuzzy": fuzzy,
                 "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "fetch_time": f"{round(time.time() - start_time, 2)}"
             }
-            if value > limit_temperature_tomat:
-                await send_message(datas)
             return datas

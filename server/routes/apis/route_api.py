@@ -8,6 +8,26 @@ from server.models import *
 
 router = APIRouter()
 
+# Kangkung
+# Humidity
+@router.get("/api/tanaman/all", response_description="Get all tanaman data")
+async def api_all_tanaman():
+    try:
+        tanaman = await get_all_tanaman()
+        return JSONResponse(status_code=status.HTTP_200_OK, content=success_response(tanaman, message="Successfully retrieved all data"))
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=fail_response(message="All data not found"))
+
+
+@router.get("/api/tanaman", response_description="Get single tanaman data")
+async def api_get_tanaman():
+    try:
+        tanaman = await get_single_tanaman()
+        return JSONResponse(status_code=status.HTTP_200_OK, content=success_response(tanaman, message="Successfully retrieved single humidity"))
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=fail_response(message="Single data humidity not found"))
+
+
 # Cabai
 # Humidity
 @router.get("/api/humidity/cabai/all", response_description="Get all humidity data")
